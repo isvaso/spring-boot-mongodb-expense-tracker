@@ -70,7 +70,6 @@ public class ExpenseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ExpenseResponseDTO> deleteExpense(
             @PathVariable String id) {
-        expenseService.deleteExpenseById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(expenseService.deleteExpenseById(id));
     }
 }

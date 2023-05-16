@@ -8,7 +8,7 @@ public class BigDecimalUtils {
         try {
             new BigDecimal(str);
             return true;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             return false;
         }
     }

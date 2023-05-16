@@ -6,12 +6,13 @@ import org.springframework.validation.BindingResult;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ErrorUtils {
 
     public static Optional<ResponseEntity<?>> getErrorResponse(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+        if (Objects.nonNull(bindingResult) && bindingResult.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> {
                 errorMap.put(error.getField(), error.getDefaultMessage());

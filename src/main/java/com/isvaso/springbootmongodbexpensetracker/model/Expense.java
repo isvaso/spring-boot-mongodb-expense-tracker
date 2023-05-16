@@ -59,4 +59,37 @@ public class Expense {
     public void setExpenseAmount(BigDecimal expenseAmount) {
         this.expenseAmount = expenseAmount;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Expense expense = (Expense) o;
+
+        if (id != null ? !id.equals(expense.id) : expense.id != null)
+            return false;
+        if (!expenseName.equals(expense.expenseName)) return false;
+        if (expenseCategory != expense.expenseCategory) return false;
+        return expenseAmount.equals(expense.expenseAmount);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + expenseName.hashCode();
+        result = 31 * result + expenseCategory.hashCode();
+        result = 31 * result + expenseAmount.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "id='" + id + '\'' +
+                ", expenseName='" + expenseName + '\'' +
+                ", expenseCategory=" + expenseCategory +
+                ", expenseAmount=" + expenseAmount +
+                '}';
+    }
 }
