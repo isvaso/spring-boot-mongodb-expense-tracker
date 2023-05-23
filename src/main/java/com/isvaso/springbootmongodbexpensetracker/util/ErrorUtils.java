@@ -9,8 +9,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Provides utility methods for working with application errors.
+ * This class contains methods for handling and processing errors that occur in the application.
+ */
 public class ErrorUtils {
 
+    /**
+     * Retrieves an error response from a BindingResult object.
+     *
+     * @param bindingResult The BindingResult object representing the binding results.
+     * @return An Optional containing a ResponseEntity instance with an appropriate HTTP status code and error map,
+     *         or an empty Optional if no errors were found.
+     */
     public static Optional<ResponseEntity<?>> getErrorResponse(BindingResult bindingResult) {
         if (Objects.nonNull(bindingResult) && bindingResult.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();

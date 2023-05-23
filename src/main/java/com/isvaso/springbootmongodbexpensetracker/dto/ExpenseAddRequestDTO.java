@@ -7,6 +7,18 @@ import com.isvaso.springbootmongodbexpensetracker.validator.StringIsBigDecimal;
 import com.isvaso.springbootmongodbexpensetracker.validator.ExpenseCategorySubset;
 import jakarta.validation.constraints.*;
 
+/**
+ * Represents a DTO (Data Transfer Object) for adding an expense.
+ * This class encapsulates the information required to create a new expense.
+ * It includes the name, category, and amount of the expense.
+ *
+ * @param expenseName     The name of the expense.
+ *                        @apiNote This field must not be null.
+ * @param expenseCategory The category of the expense.
+ *                        @apiNote This field must not be null and must be a valid expense category.
+ * @param expenseAmount   The amount of the expense.
+ *                        @apiNote This field must not be null, must be a valid decimal number, and must be within the range of 0.00 to 999999.99.
+ */
 public record ExpenseAddRequestDTO(
 
         @NotNull(message = "Can't be null")
