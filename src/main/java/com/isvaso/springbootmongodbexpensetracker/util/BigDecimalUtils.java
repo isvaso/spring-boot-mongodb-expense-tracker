@@ -1,5 +1,8 @@
 package com.isvaso.springbootmongodbexpensetracker.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 
 /**
@@ -8,6 +11,8 @@ import java.math.BigDecimal;
  */
 public class BigDecimalUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(BigDecimalUtils.class);
+
     /**
      * Checks if the provided String value can be parsed as a BigDecimal.
      *
@@ -15,10 +20,17 @@ public class BigDecimalUtils {
      * @return {@code true} if the String value can be converted to BigDecimal, {@code false} otherwise.
      */
     public static boolean isBigDecimal(String str) {
+        logger.debug("Trying to validate String {} is BigDecimal", str);
+
         try {
             new BigDecimal(str);
+
+            logger.info("Validation String is BigDecimal was successful");
             return true;
         } catch (NumberFormatException | NullPointerException e) {
+
+            logger.debug("Error occurred while parsing BigDecimal: {}", e.getMessage());
+            logger.info("Validation String is BigDecimal failed");
             return false;
         }
     }
@@ -31,6 +43,21 @@ public class BigDecimalUtils {
      *         {@code false} otherwise.
      */
     public static boolean isPositiveBigDecimal(String str) {
-        return isBigDecimal(str) && new BigDecimal(str).compareTo(BigDecimal.ZERO) >= 0;
+        logger.debug("Trying to validate String {} is positive BigDecimal", str);
+
+        if (!isBigDecimal(str)) {
+            return false;
+        }
+
+        BigDecimal value = new BigDecimal(str);
+
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            logger.debug("Negative BigDecimal value provided: {}", str);
+            logger.info("Validation String is positive BigDecimal failed");
+            return false;
+        }
+
+        logger.info("Validation String is positive BigDecimal was successful");
+        return true;
     }
 }

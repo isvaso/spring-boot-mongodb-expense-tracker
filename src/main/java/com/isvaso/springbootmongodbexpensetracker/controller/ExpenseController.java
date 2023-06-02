@@ -6,6 +6,8 @@ import com.isvaso.springbootmongodbexpensetracker.dto.ExpenseUpdateRequestDTO;
 import com.isvaso.springbootmongodbexpensetracker.service.ExpenseService;
 import com.isvaso.springbootmongodbexpensetracker.util.ErrorUtils;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -15,12 +17,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The ExpenseController class handles HTTP requests related to expenses.
+ * The ExpenseController class handles HTTP requests related to expense.
  * It provides endpoints for adding, updating, retrieving, and deleting expenses.
  */
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExpenseController.class);
 
     /**
      * Constructs a new ExpenseController with the given ExpenseService.
@@ -29,28 +33,33 @@ public class ExpenseController {
 
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
+        logger.info("ExpenseController initialized with ExpenseService: {}", expenseService);
     }
 
     /**
      * Adds a new expense to the system.
      *
-     * @param ExpenseAddRequestDTO The DTO containing the details of the expense to be added.
+     * @param expenseAddRequestDTO The DTO containing the details of the expense to be added.
      * @param bindingResult        The result of the validation of the request body.
      * @return A ResponseEntity representing the status of the operation.
      */
     @PostMapping
     public ResponseEntity<?> addExpense(
-            @Valid @RequestBody ExpenseAddRequestDTO ExpenseAddRequestDTO,
+            @Valid @RequestBody ExpenseAddRequestDTO expenseAddRequestDTO,
             BindingResult bindingResult) {
-
+        logger.debug("Adding new expense: {}", expenseAddRequestDTO);
+        
         Optional<ResponseEntity<?>> responseEntity =
                 ErrorUtils.getErrorResponse(bindingResult);
 
         if (responseEntity.isPresent()) {
+            logger.info("Expense failed to validate");
             return responseEntity.get();
         }
 
-        expenseService.addExpense(ExpenseAddRequestDTO);
+        expenseService.addExpense(expenseAddRequestDTO);
+
+        logger.info("Expense added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -65,15 +74,19 @@ public class ExpenseController {
     public ResponseEntity<?> updateExpense(
             @Valid @RequestBody ExpenseUpdateRequestDTO expenseUpdateRequestDTO,
             BindingResult bindingResult) {
+        logger.debug("Updating expense with ID: {}", expenseUpdateRequestDTO.id());
 
         Optional<ResponseEntity<?>> responseEntityOpt =
                 ErrorUtils.getErrorResponse(bindingResult);
 
         if (responseEntityOpt.isPresent()) {
+            logger.info("Expense update failed to validate");
             return responseEntityOpt.get();
         }
 
         expenseService.updateExpense(expenseUpdateRequestDTO);
+
+        logger.info("Expense updated successfully");
         return ResponseEntity.ok().build();
     }
 
@@ -84,7 +97,11 @@ public class ExpenseController {
      */
     @GetMapping
     public ResponseEntity<List<ExpenseResponseDTO>> getAllExpenses() {
-        return ResponseEntity.ok(expenseService.getAllExpenses());
+        logger.debug("Retrieving all expenses");
+        List<ExpenseResponseDTO> expenseResponseDTOList = expenseService.getAllExpenses();
+
+        logger.info("All expenses retrieved successfully");
+        return ResponseEntity.ok(expenseResponseDTOList);
     }
 
     /**
@@ -96,7 +113,11 @@ public class ExpenseController {
     @GetMapping("/{id}")
     public ResponseEntity<ExpenseResponseDTO> getExpenseById(
             @PathVariable String id) {
-        return ResponseEntity.ok(expenseService.getExpenseById(id));
+        logger.debug("Retrieving expense with ID: {}", id);
+        ExpenseResponseDTO expense = expenseService.getExpenseById(id);
+
+        logger.info("Expense with ID: {} retrieved successfully", id);
+        return ResponseEntity.ok(expense);
     }
 
     /**
@@ -108,6 +129,10 @@ public class ExpenseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ExpenseResponseDTO> deleteExpense(
             @PathVariable String id) {
-        return ResponseEntity.ok(expenseService.deleteExpenseById(id));
+        logger.debug("Deleting expense with ID: {}", id);
+        ExpenseResponseDTO deletedExpense = expenseService.deleteExpenseById(id);
+
+        logger.info("Expense with ID: {} deleted successfully", id);
+        return ResponseEntity.ok(deletedExpense);
     }
 }

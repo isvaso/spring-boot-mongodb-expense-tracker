@@ -1,5 +1,7 @@
 package com.isvaso.springbootmongodbexpensetracker.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -15,6 +17,8 @@ import java.util.Optional;
  */
 public class ErrorUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(ErrorUtils.class);
+
     /**
      * Retrieves an error response from a BindingResult object.
      *
@@ -23,13 +27,19 @@ public class ErrorUtils {
      *         or an empty Optional if no errors were found.
      */
     public static Optional<ResponseEntity<?>> getErrorResponse(BindingResult bindingResult) {
+        logger.debug("Checking field errors in BindingResult: {} for errors", bindingResult);
+
         if (Objects.nonNull(bindingResult) && bindingResult.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             });
+
+            logger.info("Field errors found in BindingResult: {}", errorMap);
             return Optional.of(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap));
         } else {
+
+            logger.info("No errors found in BindingResult");
             return Optional.empty();
         }
     }

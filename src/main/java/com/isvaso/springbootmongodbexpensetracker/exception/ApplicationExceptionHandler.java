@@ -1,8 +1,9 @@
 package com.isvaso.springbootmongodbexpensetracker.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.isvaso.springbootmongodbexpensetracker.exception.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,6 +23,8 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationExceptionHandler.class);
+
     /**
      * Handles the MethodArgumentNotValidException and returns a map of field errors.
      *
@@ -35,6 +38,8 @@ public class ApplicationExceptionHandler {
         e.getBindingResult().getFieldErrors().forEach(error -> {
             errorMap.put(error.getField(), error.getDefaultMessage());
         });
+
+        logger.error("MethodArgumentNotValidException occurred with errorMap: {}", errorMap);
         return errorMap;
     }
 
@@ -54,6 +59,8 @@ public class ApplicationExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDate.now()
         );
+
+        logger.error("JsonProcessingException occurred with ApiError: {}", apiError);
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
@@ -67,12 +74,15 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler({Exception.class, RuntimeException.class})
     public ResponseEntity<ApiError> handleException(Exception e,
                                                     HttpServletRequest request) {
+
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 LocalDate.now()
         );
+
+        logger.error("{} occurred with ApiError: {}", e.getClass().getSimpleName(), apiError);
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -86,12 +96,15 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ApiError> handleNoSuchElementException(NoSuchElementException e,
                                                                  HttpServletRequest request) {
+
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDate.now()
         );
+
+        logger.error("NoSuchElementException occurred with ApiError: {}", apiError);
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 }

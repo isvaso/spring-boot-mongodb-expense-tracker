@@ -4,10 +4,12 @@ import com.isvaso.springbootmongodbexpensetracker.model.Expense;
 import com.isvaso.springbootmongodbexpensetracker.model.ExpenseCategory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ExtendWith(SpringExtension.class)
 class ExpenseRepositoryTest {
 
     @Autowired

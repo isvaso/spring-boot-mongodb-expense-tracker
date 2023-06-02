@@ -7,6 +7,8 @@ import com.isvaso.springbootmongodbexpensetracker.dto.ExpenseUpdateRequestDTO;
 import com.isvaso.springbootmongodbexpensetracker.model.Expense;
 import com.isvaso.springbootmongodbexpensetracker.model.ExpenseCategory;
 import com.isvaso.springbootmongodbexpensetracker.repository.ExpenseRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 @Service
 public class ExpenseService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
+
     private final ExpenseRepository expenseRepository;
     private final ExpenseResponseDTOMapper expenseResponseDTOMapper;
 
@@ -34,6 +38,8 @@ public class ExpenseService {
                           ExpenseResponseDTOMapper expenseResponseDTOMapper) {
         this.expenseRepository = expenseRepository;
         this.expenseResponseDTOMapper = expenseResponseDTOMapper;
+        logger.info("ExpenseService initialized with ExpenseRepository: {} and ExpenseResponseDTOMapper: {}",
+                expenseRepository, expenseResponseDTOMapper);
     }
 
     /**
@@ -63,12 +69,15 @@ public class ExpenseService {
                                         expenseUpdateRequestDTO.id())
                         ));
 
+        logger.debug("Trying to update expense: {} by new info: {}", expense, expenseUpdateRequestDTO);
+
         boolean changesPresent = false;
 
         if (Objects.nonNull(expenseUpdateRequestDTO.expenseName())) {
             if (!expense.getExpenseName().equals(expenseUpdateRequestDTO.expenseName())) {
                 expense.setExpenseName(expenseUpdateRequestDTO.expenseName());
                 changesPresent = true;
+                logger.info("Expense name change detected");
             }
         }
 
@@ -79,6 +88,7 @@ public class ExpenseService {
                 expense.setExpenseCategory(
                         ExpenseCategory.valueOf(expenseUpdateRequestDTO.expenseCategory()));
                 changesPresent = true;
+                logger.info("Expense category change detected");
             }
         }
 
@@ -88,15 +98,13 @@ public class ExpenseService {
                     .compareTo(newValue) != 0) {
                 expense.setExpenseAmount(newValue);
                 changesPresent = true;
+                logger.info("Expense amount change detected");
             }
         }
 
         if (changesPresent) {
-            try {
-                expenseRepository.save(expense);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            expenseRepository.save(expense);
+            logger.info("Changes have been made to Expense");
         }
     }
 
